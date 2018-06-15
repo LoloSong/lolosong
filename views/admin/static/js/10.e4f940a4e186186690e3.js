@@ -1,2 +1,0 @@
-webpackJsonp([10],{PLNU:function(e,n,t){"use strict";Object.defineProperty(n,"__esModule",{value:!0});var r={render:function(){var e=this.$createElement;return(this._self._c||e)("div",[this._v("\n  permission\n")])},staticRenderFns:[]},s=t("VU/8")({},r,!1,null,null,null);n.default=s.exports}});
-//# sourceMappingURL=10.e4f940a4e186186690e3.js.map

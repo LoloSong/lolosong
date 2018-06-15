@@ -1,1 +1,0 @@
-{"version":3,"sources":["webpack:///./src/utils/constant.js"],"names":["ERR_OK"],"mappings":"sFAAO,IAAMA,EAAS","file":"static/js/0.c062d4b5c2fefbc79088.js","sourcesContent":["export const ERR_OK = 0 // code:0 为正确\r\n\n\n\n// WEBPACK FOOTER //\n// ./src/utils/constant.js"],"sourceRoot":""}
