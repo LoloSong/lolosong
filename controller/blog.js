@@ -48,12 +48,12 @@ exports.getArticleList = async ({page, limit}) => {
     ret.msg = '参数错误'
   } else {
     try {
-      let articleListDB = await Article.find().skip((Number(page) - 1) * Number(limit)).limit(Number(limit))
+      let articleListDB = await Article.find().skip((Number(page) - 1) * Number(limit)).limit(Number(limit)).sort({created: -1})
       let articleCount = await Article.count()
       articleListDB = articleListDB.map((item) => {
         let {_id, title, category, views, describe} = item
         return {
-          created: item.updated.getTime(),
+          created: item.created.getTime(),
           updated: item.updated.getTime(),
           _id,
           title,

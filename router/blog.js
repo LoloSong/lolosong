@@ -1,7 +1,4 @@
 const Router = require('koa-router')
-const bcrypt = require('bcryptjs')
-const fs = require('fs')  
-const path = require('path')  
 const blog = new Router()
 
 const {
@@ -12,12 +9,6 @@ const {
   getArticleListByCategory,
   addviews
 } = require('../controller/blog')
-/******************** 前端接口 ********************/
-// blog.get('/', async (ctx, next) => {
-//   let html = fs.readFileSync('views/frontend/blog/index.html')
-//   ctx.body = html
-// })
-// category
 
 // 获取类别
 blog.get('/category/getCategory', async (ctx) => {
