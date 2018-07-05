@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <h1>点击标题，开始录音翻译</h1>
+  <p id="title"></p>
+  <div id="director"></div>
+  <div id="year"></div>
+  <div id="poster"></div>
+  <script src="https://cdn.bootcss.com/vConsole/3.2.0/vconsole.min.js"></script>
+  <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.min.js"></script>
+  <script src="https://cdn.bootcss.com/axios/0.18.0/axios.min.js"></script>
+  <script src="https://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+  <script>
+    new VConsole()
+    let url = window.location.href
+    // axios.get('https://3b9d0db2.ngrok.io/wechat/page1/getSdk',{
+    //   params: {url: url}
+    // }).then((res) => {
+    //   wx.config({
+    //     debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+    //     appId: res.data.appId, // 必填，公众号的唯一标识
+    //     timestamp: res.data.timestamp, // 必填，生成签名的时间戳
+    //     nonceStr: res.data.nonceStr, // 必填，生成签名的随机串
+    //     signature: res.data.signature,// 必填，签名
+    //     jsApiList: [
+    //       'startRecord',
+    //       'stopRecord',
+    //       'translateVoice',
+    //       'onMenuShareAppMessage'
+    //     ] // 必填，需要使用的JS接口列表
+    //   });
+    // })
+    // wx.ready(function(){
+    //   wx.checkJsApi({
+    //       jsApiList: [
+    //         'startRecord',
+    //         'stopRecord',
+    //         'translateVoice',
+    //         'onMenuShareAppMessage'
+    //       ],
+    //       success: function(res) {
+    //         console.log('成功')
+    //       }
+    //   });
+    //   wx.onMenuShareAppMessage({
+    //     title: '测试标题', // 分享标题
+    //     desc: '测试描述', // 分享描述
+    //     link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+    //     imgUrl: 'https://lolosong.com//blog/static/img/logo.ee5b1ea.png', // 分享图标
+    //     type: '', // 分享类型,music、video或link，不填默认为link
+    //     dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+    //     success: function () {
+    //       console.log('分享成功')
+    //     }
+    //   });
+      
+    //   $('h1').on('touchstart', function(){
+    //     wx.startRecord()
+    //   })
+    //   $('h1').on('touchend', function(){
+    //     wx.stopRecord({
+    //       success: function(res) {
+    //         var localId = res.localId;
+    //         wx.translateVoice({
+    //           localId: localId, // 需要识别的音频的本地Id，由录音相关接口获得
+    //           isShowProgressTips: 1, // 默认为1，显示进度提示
+    //           success: function (res) {
+    //             console.log(res.translateResult)
+    //           }
+    //         });
+    //       }
+    //     })
+    //   })
+    // });
+    // localStorage.removeItem('userInfo')
+    wxLogin()
+    function wxLogin () {
+      const userInfo = localStorage.getItem('userInfo')
+      if (!userInfo) {
+        const reg = /code/i
+        const queryString = window.location.search.substr(1)
+        const code = getWXCode()
+        if (!code) {
+          // 没有code则跳转页面获取code
+          const appID = 'wx088b08e72776b574'
+          const redirect_uri = encodeURIComponent(location.href.split('#')[0])
+          const url = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${appID}&redirect_uri=${redirect_uri}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`
+          window.location = url
+        } else {
+          axios.get('https://3b9d0db2.ngrok.io/wechat/page1/getUserInfo',{
+            params: {code: code}
+          }).then((res) => {
+            localStorage.setItem('userInfo', JSON.stringify(res.data))
+            document.querySelector('#title').innerHTML = JSON.stringify(res.data)
+          })
+        }
+      } else {
+        document.querySelector('#title').innerHTML = userInfo
+      }
+    }
+
+    function getWXCode () {
+      let ret = {}
+      let queryArr = window.location.search.substr(1).split('&')
+      if (queryArr[0]) {
+        for (let i = 0; i < queryArr.length; i++) {
+          let arr = queryArr[i].split('=')
+          ret[arr[0]] = arr[1]
+        }
+      }
+      if (ret.code) {
+        return ret.code
+      }
+      return null
+    }
+    
+  </script>
+</body>
+</html>

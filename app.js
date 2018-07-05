@@ -1,24 +1,32 @@
 const Koa = require('koa')
+const xmlParser = require('koa-xml-body')
 const bodyParser = require('koa-bodyparser')
 const static = require('koa-static')
-const MongooseDB = require('./utils/MongooseDB')
-const { dbURL } = require('./config/dbConfig')
+const MongooseDB = require('./libs/MongooseDB')
+const { dbConfig } = require('./config/index')
 const router = require('./router/allRouter')
 
 const app = new Koa()
 
+// middleware
+app.use(xmlParser({
+  encoding: 'utf8',
+  xmlOptions: {
+    explicitArray: false
+  }
+}))
+app.use(bodyParser())
+app.use(static(`${__dirname}/views`))
+
 // database
 const db = new MongooseDB()
-db.connect(dbURL)
+db.connect(dbConfig.dbURL)
 
 // Access-Control-Allow-Origin
 app.use(async (ctx, next) => {
   ctx.set('Access-Control-Allow-Origin', '*');
   await next();
 })
-
-app.use(bodyParser())
-app.use(static(`${__dirname}/views`))
 
 // route
 app.use(router.routes()).use(router.allowedMethods)
