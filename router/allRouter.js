@@ -16,7 +16,7 @@ router.use('/api/admin', blogAdmin.routes())
 router.use('/wechat/page1', page1.routes())
 
 // blog(放在最后)
-router.get('/*', async (ctx) => {
+router.get('/', async (ctx) => {
   let data = await util.readFile('./views/blog/index.html')
   ctx.body = data
 })
