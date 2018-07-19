@@ -89,7 +89,7 @@ exports.getHotArticleList = async ({page, limit}) => {
       articleListDB = articleListDB.map((item) => {
         let {_id, title, category, views, describe} = item
         return {
-          created: item.updated.getTime(),
+          created: item.created.getTime(),
           updated: item.updated.getTime(),
           _id,
           title,
