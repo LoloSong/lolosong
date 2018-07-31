@@ -31,6 +31,7 @@ class MongooseDB {
 
     // 数据库开启信息
     mongoose.connection.once('open', () => {
+      maxConnectTimes = 3
       console.log('MongoDB connected successfully')
     })
   }
