@@ -1,5 +1,6 @@
 const Category = require('../model/blog/Category')
 const Article = require('../model/blog/Article')
+const Friend = require('../model/blog/Friend')
 
 exports.getCategory = async () => {
   let ret = {}
@@ -114,6 +115,7 @@ exports.getHotArticleList = async ({page, limit}) => {
 }
 
 exports.getArticleListByCategory = async ({page, limit, category}) => {
+  console.log(1)
   let ret = {}
   if (!page || !limit || !category) {
     ret.code = 1
@@ -169,6 +171,30 @@ exports.addviews = async (articleID) => {
       ret.code = 1
       ret.msg = '阅读数增加失败'
     }
+  }
+  return ret
+}
+
+exports.getFriend = async () => {
+  let ret = {}
+  try {
+    let friendDB = await Friend.find()
+    friendDB = friendDB.map((item) => {
+      let { _id, friendName, friendUrl } = item
+      return {
+        created: item.updated.getTime(),
+        updated: item.updated.getTime(),
+        friendName,
+        friendUrl,
+        _id
+      }
+    })
+    ret.code = 0
+    ret.msg = '查询友情链接成功'
+    ret.data = friendDB
+  } catch (err) {
+    ret.code = 1
+    ret.msg = '查询友情链接失败'
   }
   return ret
 }

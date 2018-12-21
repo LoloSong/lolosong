@@ -7,7 +7,8 @@ const {
   getArticleList,
   getHotArticleList,
   getArticleListByCategory,
-  addviews
+  addviews,
+  getFriend
 } = require('../controller/blog')
 
 // 获取类别
@@ -36,6 +37,7 @@ blog.get('/article/getHotArticleList', async (ctx) => {
 // 通过标签获取文章列表
 blog.get('/articleList/getArticleListByCategory', async (ctx) => {
   const {page, limit, category} = ctx.request.query
+  console.log(123)
   ctx.body = await getArticleListByCategory({page, limit, category})
 })
 
@@ -43,6 +45,11 @@ blog.get('/articleList/getArticleListByCategory', async (ctx) => {
 blog.post('/article/addviews', async (ctx) => {
   const {articleID} = ctx.request.body
   ctx.body = await addviews(articleID)
+})
+
+// 获取友情链接
+blog.get('/friend/getFriend', async (ctx) => {
+  ctx.body = await getFriend()
 })
 
 module.exports = blog 

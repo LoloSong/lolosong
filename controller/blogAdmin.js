@@ -176,14 +176,14 @@ exports.addFriend = async ({ friendName, friendUrl }) => {
   return ret
 }
 
-exports.deleteFriend = async (friendID) => {
+exports.deleteFriend = async (id) => {
   let ret = {}
-  if (!friendID) {
+  if (!id) {
     ret.code = 1
     ret.msg = '参数错误'
   } else {
     try {
-      let result = await Friend.remove({ _id: friendID })
+      let result = await Friend.remove({ _id: id })
       if (result.n === 1) {
         ret.code = 0
         ret.msg = '友情链接删除成功'
@@ -199,14 +199,14 @@ exports.deleteFriend = async (friendID) => {
   return ret
 }
 
-exports.editFriend = async ({ friendID, friendName, friendUrl }) => {
+exports.editFriend = async ({ id, friendName, friendUrl }) => {
   let ret = {}
-  if (!friendID || !friendName || !friendUrl) {
+  if (!id || !friendName || !friendUrl) {
     ret.code = 1
     ret.msg = '参数错误'
   } else {
     try {
-      let result = await Friend.update({ _id: friendID }, { $set: { friendName: friendName, friendUrl: friendUrl, updated: Date.now() } })
+      let result = await Friend.update({ _id: id }, { $set: { friendName: friendName, friendUrl: friendUrl, updated: Date.now() } })
       if (result.n === 1) {
         ret.code = 0
         ret.msg = '友情链接修改成功'
