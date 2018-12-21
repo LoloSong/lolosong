@@ -21,4 +21,5 @@ router.get('/*', async (ctx) => {
   let data = await util.readFile('./views/blog/index.html')
   ctx.body = data
 })
+
 module.exports = router

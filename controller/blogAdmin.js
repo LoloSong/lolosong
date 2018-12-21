@@ -1,21 +1,22 @@
 const Category = require('../model/blog/Category')
 const Article = require('../model/blog/Article')
 const Manager = require('../model/blog/Manager')
+const Friend = require('../model/blog/Friend')
 
-exports.login = async ({username, password}) => {
+exports.login = async ({ username, password }) => {
   let ret = {}
   if (!username || !password) {
     ret.code = 1
     ret.msg = '参数错误'
   } else {
     try {
-      let managerDB = await Manager.findOne({username})
+      let managerDB = await Manager.findOne({ username })
       if (managerDB && managerDB.password === password) {
         ret.code = 0
         ret.msg = '用户名密码正确',
-        ret.data = {
-          token: managerDB._id
-        }
+          ret.data = {
+            token: managerDB._id
+          }
       } else {
         ret.code = 1
         ret.msg = '用户名或密码错误'
@@ -35,7 +36,7 @@ exports.getInfo = async (token) => {
     ret.msg = '参数错误'
   } else {
     try {
-      let managerDB = await Manager.findOne({_id: token})
+      let managerDB = await Manager.findOne({ _id: token })
       if (managerDB) {
         ret.code = 0
         ret.msg = '用户信息获取成功'
@@ -63,13 +64,13 @@ exports.addCategory = async (category) => {
     ret.msg = '参数错误'
   } else {
     try {
-      let categoryDB = await Category.findOne({category})
+      let categoryDB = await Category.findOne({ category })
       if (categoryDB && categoryDB.category === category) {
         ret.code = 1
         ret.msg = '类别已存在'
       } else {
         try {
-          await new Category({category}).save()
+          await new Category({ category }).save()
           ret.code = 0
           ret.msg = '类别添加成功'
         } catch (err) {
@@ -94,7 +95,7 @@ exports.deleteCategory = async (categoryID) => {
     ret.msg = '参数错误'
   } else {
     try {
-      let result = await Category.remove({_id: categoryID})
+      let result = await Category.remove({ _id: categoryID })
       if (result.n === 1) {
         ret.code = 0
         ret.msg = '类别删除成功'
@@ -110,23 +111,23 @@ exports.deleteCategory = async (categoryID) => {
   return ret
 }
 
-exports.editCategory = async ({categoryID,category}) => {
+exports.editCategory = async ({ categoryID, category }) => {
   let ret = {}
   if (!categoryID || !category) {
     ret.code = 1
     ret.msg = '参数错误'
   } else {
     try {
-      let result = await Category.update({_id: categoryID}, {$set: {category: category, updated: Date.now()}})
+      let result = await Category.update({ _id: categoryID }, { $set: { category: category, updated: Date.now() } })
       if (result.n === 1) {
-        ret.code  = 0
+        ret.code = 0
         ret.msg = '类别修改成功'
       } else {
-        ret.code  = 1
+        ret.code = 1
         ret.msg = '类别修改失败'
       }
     } catch (err) {
-      ret.code  = 1
+      ret.code = 1
       ret.msg = '类别修改失败'
     }
   }
@@ -138,7 +139,7 @@ exports.getCategory = async () => {
   try {
     let categoryDB = await Category.find()
     categoryDB = categoryDB.map((item) => {
-      let {_id, category} = item
+      let { _id, category } = item
       return {
         created: item.updated.getTime(),
         updated: item.updated.getTime(),
@@ -156,14 +157,103 @@ exports.getCategory = async () => {
   return ret
 }
 
-exports.createArticle = async ({title, category, describe, content, contentToMarked}) => {
+exports.addFriend = async ({ friendName, friendUrl }) => {
+  let ret = {}
+  if (!friendName || !friendUrl) {
+    ret.code = 1
+    ret.msg = '参数错误'
+  } else {
+    try {
+      await new Friend({ friendName, friendUrl }).save()
+      ret.code = 0
+      ret.msg = '类别添加成功'
+    } catch (err) {
+      ret.code = 1
+      ret.msg = '数据连接错误'
+      ret.data = err
+    }
+  }
+  return ret
+}
+
+exports.deleteFriend = async (friendID) => {
+  let ret = {}
+  if (!friendID) {
+    ret.code = 1
+    ret.msg = '参数错误'
+  } else {
+    try {
+      let result = await Friend.remove({ _id: friendID })
+      if (result.n === 1) {
+        ret.code = 0
+        ret.msg = '友情链接删除成功'
+      } else {
+        ret.code = 1
+        ret.msg = '友情链接删除失败'
+      }
+    } catch (err) {
+      ret.code = 1
+      ret.msg = '友情链接删除失败'
+    }
+  }
+  return ret
+}
+
+exports.editFriend = async ({ friendID, friendName, friendUrl }) => {
+  let ret = {}
+  if (!friendID || !friendName || !friendUrl) {
+    ret.code = 1
+    ret.msg = '参数错误'
+  } else {
+    try {
+      let result = await Friend.update({ _id: friendID }, { $set: { friendName: friendName, friendUrl: friendUrl, updated: Date.now() } })
+      if (result.n === 1) {
+        ret.code = 0
+        ret.msg = '友情链接修改成功'
+      } else {
+        ret.code = 1
+        ret.msg = '友情链接修改失败'
+      }
+    } catch (err) {
+      ret.code = 1
+      ret.msg = '友情链接修改失败'
+    }
+  }
+  return ret
+}
+
+exports.getFriend = async () => {
+  let ret = {}
+  try {
+    let friendDB = await Friend.find()
+    friendDB = friendDB.map((item) => {
+      let { _id, friendName, friendUrl } = item
+      return {
+        created: item.updated.getTime(),
+        updated: item.updated.getTime(),
+        friendName,
+        friendUrl,
+        _id
+      }
+    })
+    ret.code = 0
+    ret.msg = '查询友情链接成功'
+    ret.data = friendDB
+  } catch (err) {
+    ret.code = 1
+    ret.msg = '查询友情链接失败'
+  }
+  return ret
+}
+
+exports.createArticle = async ({ title, category, describe, content, contentToMarked }) => {
   let ret = {}
   if (!title || !category || !describe || !content || !contentToMarked) {
     ret.code = 1
     ret.msg = '参数错误'
   } else {
     try {
-      await new Article({title, category, describe, content, contentToMarked}).save()
+      await new Article({ title, category, describe, content, contentToMarked }).save()
       ret.code = 0
       ret.msg = '文章创建成功'
     } catch (err) {
@@ -181,7 +271,7 @@ exports.deleteArticle = async (articleID) => {
     ret.msg = '参数错误'
   } else {
     try {
-      let result = await Article.remove({_id: articleID})
+      let result = await Article.remove({ _id: articleID })
       if (result.n === 1) {
         ret.code = 0
         ret.msg = '文章删除成功'
@@ -197,30 +287,32 @@ exports.deleteArticle = async (articleID) => {
   return ret
 }
 
-exports.editArticle = async ({articleID, title, category, describe, content, contentToMarked}) => {
+exports.editArticle = async ({ articleID, title, category, describe, content, contentToMarked }) => {
   let ret = {}
   if (!articleID || !title || !category || !describe || !content || !contentToMarked) {
     ret.code = 1
     ret.msg = '参数错误'
   } else {
     try {
-      let result = await Article.update({_id: articleID}, {$set: {
-        title, 
-        category,
-        describe,
-        content,
-        contentToMarked,
-        updated: Date.now()
-      }})
+      let result = await Article.update({ _id: articleID }, {
+        $set: {
+          title,
+          category,
+          describe,
+          content,
+          contentToMarked,
+          updated: Date.now()
+        }
+      })
       if (result.n === 1) {
-        ret.code  = 0
+        ret.code = 0
         ret.msg = '文章修改成功'
       } else {
-        ret.code  = 1
+        ret.code = 1
         ret.msg = '文章修改失败'
       }
     } catch (err) {
-      ret.code  = 1
+      ret.code = 1
       ret.msg = '文章修改失败'
     }
   }
@@ -234,7 +326,7 @@ exports.getOneArticle = async (articleID) => {
     ret.msg = '参数错误'
   } else {
     try {
-      let articleDB = await Article.findOne({_id: articleID})
+      let articleDB = await Article.findOne({ _id: articleID })
       ret.code = 0
       ret.msg = '文章信息获取成功'
       ret.data = articleDB
@@ -246,7 +338,7 @@ exports.getOneArticle = async (articleID) => {
   return ret
 }
 
-exports.getArticleList = async ({page, limit}) => {
+exports.getArticleList = async ({ page, limit }) => {
   let ret = {}
   if (!page || !limit) {
     ret.code = 1
@@ -256,7 +348,7 @@ exports.getArticleList = async ({page, limit}) => {
       let articleListDB = await Article.find().skip((Number(page) - 1) * Number(limit)).limit(Number(limit))
       let articleCount = await Article.count()
       articleListDB = articleListDB.map((item) => {
-        let {_id, title, category, views} = item
+        let { _id, title, category, views } = item
         return {
           created: item.created.getTime(),
           updated: item.updated.getTime(),
@@ -270,7 +362,7 @@ exports.getArticleList = async ({page, limit}) => {
       ret.msg = '文章列表信息获取成功'
       ret.data = {
         list: articleListDB,
-        articleCount:articleCount,
+        articleCount: articleCount,
         currentPage: page
       }
     } catch (err) {

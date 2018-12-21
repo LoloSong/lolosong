@@ -12,7 +12,11 @@ const {
   deleteArticle,
   editArticle,
   getOneArticle,
-  getArticleList
+  getArticleList,
+  addFriend,
+  deleteFriend,
+  editFriend,
+  getFriend
 } = require('../controller/blogAdmin')
 
 // 登录
@@ -48,6 +52,29 @@ blogAdmin.post('/category/editCategory', async (ctx) => {
 // 获取类别
 blogAdmin.get('/category/getCategory', async(ctx) => {
   ctx.body = await getCategory()
+})
+
+// 添加友情链接
+blogAdmin.post('/friend/addFriend', async(ctx) => {
+  const {friendName, friendUrl} = ctx.request.body
+  ctx.body = await addFriend({friendName, friendUrl})
+})
+
+// 删除友情链接
+blogAdmin.post('/friend/deleteFriend', async(ctx) => {
+  const {friendID} = ctx.request.body
+  ctx.body = await deleteFriend(friendID)
+})
+
+// 编辑友情链接
+blogAdmin.post('/friend/editFriend', async(ctx) => {
+  const {friendID, friendName, friendUrl} = ctx.request.body
+  ctx.body = await editFriend({friendID, friendName, friendUrl})
+})
+
+// 获取友情链接
+blogAdmin.get('/friend/getFriend', async(ctx) => {
+  ctx.body = await getFriend()
 })
 
 // 创建文章
